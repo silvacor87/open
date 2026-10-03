@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Open in Claude app</title>
+<style>
+  :root {
+    --paper: #F5F7FA; --ink: #121821; --muted: #586474;
+    --steel: #1E4E8C; --steel-ink: #FFFFFF; --line: #D5DCE5; --well: #E8EDF3;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #10151C; --ink: #E7ECF2; --muted: #9AA6B5;
+      --steel: #5E9BEA; --steel-ink: #08111D; --line: #2A3441; --well: #1A222D;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+    display: grid; place-items: center; padding: 1.5rem;
+  }
+  main { width: 100%; max-width: 30rem; }
+  h1 { margin: 0 0 1.25rem; font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 600; line-height: 1.15; }
+  .open {
+    display: block; width: 100%; padding: 1rem 1.25rem;
+    font: inherit; font-size: 1.1rem; font-weight: 600;
+    color: var(--steel-ink); background: var(--steel);
+    border-radius: 10px; text-align: center; text-decoration: none;
+  }
+  .open:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .note { margin: 0.9rem 0 0; color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
+  code {
+    display: block; overflow-x: auto; white-space: nowrap; margin-top: 0.6rem;
+    font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.8rem;
+    background: var(--well); padding: 0.55rem 0.7rem; border-radius: 6px;
+  }
+  .error h1 { color: var(--ink); }
+</style>
+</head>
+<body>
+<main id="main">
+  <h1>Opening chat in the Claude app</h1>
+  <a class="open" id="open" href="#">Open in Claude app</a>
+  <p class="note">If nothing happens, click the button. Your browser may ask once whether to open Claude; you can tell it to always allow this site.</p>
+  <code id="addr"></code>
+</main>
+<script>
+  // Usage: .../open/#<chat-uuid>   or   .../open/?chat=<chat-uuid>
+  var raw = (location.hash || "").replace(/^#/, "") ||
+            new URLSearchParams(location.search).get("chat") || "";
+  var id = raw.trim().toLowerCase();
+  var valid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id);
+
+  if (!valid) {
+    document.getElementById("main").className = "error";
+    document.getElementById("main").innerHTML =
+      "<h1>No chat ID in this link</h1>" +
+      "<p class=\"note\">Add a Claude chat ID after a # at the end of the address, " +
+      "for example <code>…/open/#70c35b8b-95c3-4051-9a29-f654bf84f6b7</code></p>";
+  } else {
+    var target = "claude://claude.ai/chat/" + id;
+    var btn = document.getElementById("open");
+    btn.href = target;
+    document.getElementById("addr").textContent = target;
+    document.title = "Open in Claude app";
+    window.location.replace(target);
+  }
+</script>
+</body>
+</html>
